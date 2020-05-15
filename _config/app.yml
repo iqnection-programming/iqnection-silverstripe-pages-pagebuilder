@@ -1,0 +1,6 @@
+---
+Name: pagebuilder
+---
+SilverStripe\Admin\LeftAndMain:
+  extra_requirements_css:
+    - iqnection-pages/pagebuilder:css/cms.scss

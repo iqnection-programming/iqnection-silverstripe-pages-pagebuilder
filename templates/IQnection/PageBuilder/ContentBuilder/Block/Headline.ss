@@ -1,0 +1,1 @@
+<$Type.Lowercase class="$CSSClasses">$Headline.RAW</$Type.Lowercase>
