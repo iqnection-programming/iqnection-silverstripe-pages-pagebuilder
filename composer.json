@@ -21,7 +21,8 @@
 		"expose": [
 			"css",
 			"images",
-			"javascript"
+			"javascript",
+			"admin"
 		]
 	},
 	"autoload": {

@@ -3,6 +3,7 @@
 namespace IQnection\PageBuilder\ContentBuilder\Block;
 
 use SilverStripe\Forms;
+use SilverStripe\View\Requirements;
 
 class Headline extends Block
 {
@@ -16,6 +17,7 @@ class Headline extends Block
 		'Transform' => 'Varchar(20)',//"Enum('Default,Uppercase,Lowercase','Default')",
 		'Weight' => 'Varchar(20)',//"Enum('Default,Lite,Regular,Medium,Semi-Bold,Bold,Extrabold','Default')",
 		'Style' => 'Varchar(20)',//"Enum('Default,Normal,Italic','Default')",
+		'Size' => 'Text',
 	];
 	
 	private static $defaults = [
@@ -44,12 +46,12 @@ class Headline extends Block
 	];
 	
 	private static $weights = [
-		300,
-		400,
-		500,
-		600,
-		700,
-		800
+		'Lite', // 300
+		'Regular', // 400
+		'Medium', // 500
+		'Semi-Bold', // 600
+		'Bold', // 700
+		'Extrabold' // 800
 	];
 	
 	private static $styles = [
@@ -60,6 +62,7 @@ class Headline extends Block
 	public function getCMSFields()
 	{
 		$fields = parent::getCMSFields();
+		$fontSizes = $this->getFontSizes();
 		$fields->addFieldsToTab('Root.Style', [
 			Forms\DropdownField::Create('Color','Color')
 				->setSource(array_combine($this->Config()->get('colors'),$this->Config()->get('colors')))
@@ -71,37 +74,91 @@ class Headline extends Block
 				->setSource(array_combine($this->Config()->get('transforms'),$this->Config()->get('transforms')))
 				->setEmptyString('Default'),
 			Forms\DropdownField::Create('Weight','Weight')
-				->setSource(array_combine($this->Config()->get('weights'),$this->Config()->get('weights')))
+				->setSource($this->Config()->get('weights'))
 				->setEmptyString('Default'),
 			Forms\DropdownField::Create('Style','Style')
 				->setSource(array_combine($this->Config()->get('styles'),$this->Config()->get('styles')))
-				->setEmptyString('Default')
-			]);
+				->setEmptyString('Default'),
+			Forms\FieldGroup::create('Font Size', [
+				Forms\TextField::create('_Size[Large]','Desktop ( >= 801px)')->setValue($fontSizes['Large']),
+				Forms\TextField::create('_Size[Medium]','Tablet (501px - 800px)')->setValue($fontSizes['Medium']),
+				Forms\TextField::create('_Size[Small]','Mobile ( =< 500px)')->setValue($fontSizes['Small']),
+			])->setDescription('(eg. 24px, 4vw, 1em)')
+		]);
 		return $fields;
+	}
+	
+	public function onBeforeWrite()
+	{
+		parent::onBeforeWrite();
+		if (isset($_REQUEST['_Size']))
+		{
+			$sizes = [
+				'Large' => $_REQUEST['_Size']['Large'],
+				'Medium' => $_REQUEST['_Size']['Medium'],
+				'Small' => $_REQUEST['_Size']['Small']
+			];
+			$this->Size = json_encode($sizes);
+		}
+	}
+	
+	public function getFontSizes()
+	{
+		$setSizes = json_decode($this->Size,1);
+		$sizes = [
+			'Large' => isset($setSizes['Large']) ? $setSizes['Large'] : null,
+			'Medium' => isset($setSizes['Medium']) ? $setSizes['Medium'] : null,
+			'Small' => isset($setSizes['Small']) ? $setSizes['Small'] : null
+		];
+		return $sizes;
 	}
 	
 	public function updateCSSClasses(&$cssClasses)
 	{
 		if ($this->Color)
 		{
-			$cssClasses[] = 'text-'.strtolower($this->Color);
+			$cssClasses[] = $this->cleanCssClassName('text-'.$this->Color);
 		}
 		if ($this->Alignment)
 		{
-			$cssClasses[] = 'text-'.strtolower($this->Alignment);
+			$cssClasses[] = $this->cleanCssClassName('text-'.$this->Alignment);
 		}
-		if ($this->TextTransform)
+		if ($this->Transform)
 		{
-			$cssClasses[] = 'text-'.strtolower($this->TextTransform);
+			$cssClasses[] = $this->cleanCssClassName('text-'.$this->Transform);
 		}
 		if ($this->Weight)
 		{
-			$cssClasses[] = 'text-'.strtolower($this->Weight);
+			$cssClasses[] = $this->cleanCssClassName('text-'.$this->Weight);
 		}
 		if ($this->Style)
 		{
-			$cssClasses[] = 'text-'.strtolower($this->Style);
+			$cssClasses[] = $this->cleanCssClassName('text-'.$this->Style);
 		}
+	}
+	
+	public function getCustomCSS()
+	{
+		$customCss = parent::getCustomCSS();
+		$fontSizes = $this->getFontSizes();
+		if ($fontSizes['Large'])
+		{
+			$customCss['Large']['#'.$this->ElementHTMLID().' > .headline'][] = 'font-size:'.$fontSizes['Large'];
+		}
+		if ($fontSizes['Medium'])
+		{
+			$customCss['Medium']['#'.$this->ElementHTMLID().' > .headline'][] = 'font-size:'.$fontSizes['Medium'];
+		}
+		if ($fontSizes['Small'])
+		{
+			$customCss['Small']['#'.$this->ElementHTMLID().' > .headline'][] = 'font-size:'.$fontSizes['Small'];
+		}
+		return $customCss;
+	}
+	
+	public function getDescription()
+	{
+		return 'Headline: '.strip_tags($this->Headline);
 	}
 }
 

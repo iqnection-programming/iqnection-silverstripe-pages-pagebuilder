@@ -17,6 +17,10 @@ class PageBuilder extends \Page
 		'PageBuilderSections' => PageBuilderSection::class
 	];
 	
+	private static $owns = [
+		'PageBuilderSections'
+	];
+	
 	public function getCMSFields()
 	{
 		$fields = parent::getCMSFields();
@@ -30,10 +34,8 @@ class PageBuilder extends \Page
 			'PageBuilderSections',
 			'Sections',
 			$this->PageBuilderSections(),
-			Forms\GridField\GridFieldConfig_RecordEditor::create(100)
+			$PageBuilderSections_config = Forms\GridField\GridFieldConfig_RecordEditor::create(100)
 				->addComponent(new GridFieldSortableRows('SortOrder'))
-				->addComponent($GridFieldAddNewMultiClass = new GridFieldExtensions\GridFieldAddNewMultiClass())
-				->removeComponentsByType(Forms\GridField\GridFieldAddNewButton::class)
 			)
 		);
 		$sectionTypes = [];
@@ -44,9 +46,83 @@ class PageBuilder extends \Page
 				$sectionTypes[$subClass] = $subClass::Config()->get('type_title');
 			}
 		}
-		$GridFieldAddNewMultiClass->setTitle('Add Section')
-			->setClasses($sectionTypes);
+		if (count($sectionTypes) > 1)
+		{
+			$PageBuilderSections_config->addComponent($GridFieldAddNewMultiClass = new GridFieldExtensions\GridFieldAddNewMultiClass());
+			$PageBuilderSections_config->removeComponentsByType(Forms\GridField\GridFieldAddNewButton::class);
+			$GridFieldAddNewMultiClass->setTitle('Add Section')
+				->setClasses($sectionTypes);
+		}
+		
+		$fields->addFieldToTab('Root.Developer.PageBuilder', Forms\LiteralField::create('_exportPageBuilder','<a href="'.$this->Link('_pageBuilderExport').'" target="_blank">Export Page Builder Data</a>'));
 		
 		return $fields;
 	}
+	
+	public function _pageBuilderExport()
+	{
+		$data = [];
+		foreach($this->PageBuilderSections() as $section)
+		{
+			$sectionData = $section->export_forPageBuilder();
+			$data[] = $sectionData;
+		}
+		return $data;
+	}
+	
+	/**
+	 * Collects custom CSS from each section
+	 * Expects each section to provide format:
+	 * [
+	 *      Large => [
+	 *          {element selector} => [
+	 *              'style: value',
+	 *              'another-style: value'
+	 *          ]
+	 *      ],
+	 *      Medium => [
+	 *          {element selector} => [
+	 *              'style: value',
+	 *              'another-style: value'
+	 *          ]
+	 *      ],
+	 *      Small => [
+	 *          {element selector} => [
+	 *              'style: value',
+	 *              'another-style: value'
+	 *          ]
+	 *      ]
+	 * ]
+	 *
+	 * @returns array
+	 */
+	public function getCustomCSS()
+	{
+		$customCss = [
+			'Large' => [],
+			'Medium' => [],
+			'Small' => []
+		];
+		foreach($this->PageBuilderSections() as $section)
+		{
+			$sectionCustomCss = $section->getCustomCss();
+			$customCss['Large'] = array_merge($customCss['Large'], $sectionCustomCss['Large']);
+			$customCss['Medium'] = array_merge($customCss['Medium'], $sectionCustomCss['Medium']);
+			$customCss['Small'] = array_merge($customCss['Small'], $sectionCustomCss['Small']);
+		}
+		return $customCss;
+	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -7,6 +7,7 @@ use SilverStripe\Forms;
 use SilverStripe\Core\ClassInfo;
 use SilverStripe\Core\Injector\Injector;
 use IQnection\PageBuilder\Section\ContentBuilderSection;
+use SilverStripe\Assets\Shortcodes\FileLink;
 
 class Block extends DataObject
 {
@@ -18,6 +19,7 @@ class Block extends DataObject
 	
 	private static $db = [
 		'SortOrder' => 'Int',
+		'AdditionalCssClasses' => 'Varchar(255)',
 	];
 	
 	private static $has_one = [
@@ -25,7 +27,8 @@ class Block extends DataObject
 	];
 	
 	private static $summary_fields = [
-		'CMSPreview' => 'View'
+		'Title' => 'Type',
+		'Description' => 'Description'
 	];
 	
 	private static $default_sort = 'SortOrder ASC';
@@ -34,6 +37,7 @@ class Block extends DataObject
 	{
 		$fields = parent::getCMSFields();
 		$fields->removeByName(['SortOrder','ContentBuilderSectionID']);
+		$fields->addFieldToTab('Root.Style', Forms\TextField::create('AdditionalCssClasses','Additional CSS Classes') );
 		
 		if ($this->Exists())
 		{
@@ -42,25 +46,62 @@ class Block extends DataObject
 		return $fields;
 	}
 	
+	protected function cleanCssClassName($cssClass)
+	{
+		return preg_replace('/[^a-z0-9\-_]/','-',strtolower($cssClass));
+	}
+	
 	public function SectionCSSClasses($asString = true)
 	{
-		$classes = [];
-		$classes[] = strtolower(preg_replace('/^\-|\-$/','',preg_replace('/([A-Z])/','-$1',ClassInfo::shortName($this))));
+		$classes = explode(',',preg_replace('/\s/',',',$this->AdditionalCssClasses));
+		$classes[] = strtolower(preg_replace('/^\-|\-$/','',preg_replace('/([A-Z])/','-$1',ClassInfo::shortName($this)))).'-container';
 		$this->invokeWithExtensions('updateSectionCSSClasses',$classes);
 		return ($asString) ? implode(' ',$classes) : $classes;
 	}
 	
+	public function ElementHTMLID()
+	{
+		return 'contentBuilder-block-'.$this->ID;
+	}
+	
 	public function CSSClasses($asString = true)
 	{
-		$classes = ['content-builder-block'];
+		$classes = [];
+		$classes[] = 'content-builder-block-element';
 		$classes[] = strtolower(preg_replace('/^\-|\-$/','',preg_replace('/([A-Z])/','-$1',ClassInfo::shortName($this))));
 		$this->invokeWithExtensions('updateCSSClasses',$classes);
 		return ($asString) ? implode(' ',$classes) : $classes;
 	}
 	
+	public function getCustomCSS()
+	{
+		return [
+			'Large' => [],
+			'Medium' => [],
+			'Small' => []
+		];
+	}
+	
+	public function onAfterWrite()
+	{
+		parent::onAfterWrite();
+		foreach(FileLink::get()->Filter(['ParentID' => $this->ID, 'ParentClass' => $this->getClassName()]) as $fileLink)
+		{
+			if (!$fileLink->Linked()->isPublished())
+			{
+				$fileLink->Linked()->publishSingle();
+			}
+		}
+	}
+	
 	public function getTitle()
 	{
 		return static::Config()->get('type_title');
+	}
+	
+	public function getDescription()
+	{
+		return $this->getTitle();
 	}
 	
 	public function CMSPreview()

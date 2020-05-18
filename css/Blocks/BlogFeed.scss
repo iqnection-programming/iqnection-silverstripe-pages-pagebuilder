@@ -1,0 +1,15 @@
+@import '../base';
+
+/*-- Content Builder Blog Feed --*/
+ul.blog-feed									{
+	
+	@media(min-width:801px){
+		&.cols-2								{ columns:2; column-gap:4%; }
+		&.cols-3								{ columns:3; column-gap:4%; }
+	}
+	@media(max-width:800px){
+		&										{ list-style:none; font-size:0.9rem; }
+		li										{ text-align:center; margin-left:0; border-top:1px solid #ccc; padding:6px 0; }
+		a:after									{ content:' >>'; }
+	}
+}

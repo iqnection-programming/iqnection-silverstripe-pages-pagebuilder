@@ -1,0 +1,29 @@
+@import '../base';
+
+.page-builder-section								{
+	&.bg-image										{ background-color:transparent; background-position:center center; background-repeat:no-repeat; background-size:cover; }
+	
+	/* Alignment */
+	.text-left										{ text-align:left; }
+	.text-center									{ text-align:center; }
+	.text-right										{ text-align:right; }
+	
+	/* Font Weight */
+	.text-lite										{ font-weight:300; }
+	.text-regular									{ font-weight:400; }
+	.text-medium									{ font-weight:500; }
+	.text-semi-bold									{ font-weight:600; }
+	.text-bold										{ font-weight:700; }
+	.text-extrabold									{ font-weight:800; }
+	
+	/* Transform */
+	.text-uppercase									{ text-transform:uppercase; }
+	.text-lowercase									{ text-transform:lowercase; }
+	
+	/* Style */
+	.text-normal									{ font-style:normal; }
+	.text-italic									{ font-style:italic; }
+	
+	@import '../Sections/ContentBuilderSection';
+}
+

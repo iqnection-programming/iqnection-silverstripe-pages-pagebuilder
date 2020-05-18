@@ -15,7 +15,12 @@ class Content extends Block
 	public function getCMSFields()
 	{
 		$fields = parent::getCMSFields();
-		$fields->addFieldToTab('Root.Main', Forms\HTMLEditor\HTMLEditorField::create('Content','Content') );
+		$fields->addFieldToTab('Root.Main', Forms\HTMLEditor\HTMLEditorField::create('Content','Content')->addExtraClass('stacked') );
 		return $fields;
+	}
+	
+	public function getDescription()
+	{
+		return $this->dbObject('Content')->Summary();
 	}
 }
