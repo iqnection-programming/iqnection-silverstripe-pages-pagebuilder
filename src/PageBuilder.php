@@ -30,7 +30,7 @@ class PageBuilder extends \Page
 			'Sidebar',
 			'Blog Feed'
 		]);
-		$fields->addFieldToTab('Root.Main', Forms\GridField\GridField::create(
+		$fields->addFieldToTab('Root.Main', $PageBuilderSections_gf = Forms\GridField\GridField::create(
 			'PageBuilderSections',
 			'Sections',
 			$this->PageBuilderSections(),
@@ -52,6 +52,10 @@ class PageBuilder extends \Page
 			$PageBuilderSections_config->removeComponentsByType(Forms\GridField\GridFieldAddNewButton::class);
 			$GridFieldAddNewMultiClass->setTitle('Add Section')
 				->setClasses($sectionTypes);
+		}
+		else
+		{
+			$PageBuilderSections_gf->setModelClass(key($sectionTypes));
 		}
 		
 		$fields->addFieldToTab('Root.Developer.PageBuilder', Forms\LiteralField::create('_exportPageBuilder','<a href="'.$this->Link('_pageBuilderExport').'" target="_blank">Export Page Builder Data</a>'));
