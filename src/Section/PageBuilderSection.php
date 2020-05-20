@@ -22,6 +22,7 @@ class PageBuilderSection extends DataObject
 		'SortOrder' => 'Int',
 		'BackgroundColor' => 'Varchar(20)',
 		'AdditionalCssClasses' => 'Varchar(255)',
+		'Borders' => 'Text',
 	];
 	
 	private static $has_one = [
@@ -53,6 +54,12 @@ class PageBuilderSection extends DataObject
 		'Grey'
 	];
 	
+	private static $border_colors = [
+		'#032042',// => 'Blue',
+		'#000000',// => 'Black',
+		'#ffcc00',// => 'Yellow'
+	];
+	
 	private static $default_sort = 'SortOrder ASC';
 	
 	public function getCMSFields()
@@ -63,22 +70,46 @@ class PageBuilderSection extends DataObject
 			'PageID',
 			'BackgroundImageLarge',
 			'BackgroundImageMedium',
-			'BackgroundImageSmall'
+			'BackgroundImageSmall',
+			'Borders'
 		]);
-		
+		$borderColorDataList = '<datalist id="_BordersColors">';
+		foreach($this->Config()->get('border_colors') as $title)
+		{
+			$borderColorDataList .= '<option>'.$title.'</option>';
+		}
+		$borderColorDataList .= '</datalist>';
 		$fields->addFieldsToTab('Root.Style', [
 			Forms\DropdownField::Create('BackgroundColor','Background Color')
 				->setSource(array_combine($this->Config()->get('background_colors'),$this->Config()->get('background_colors')))
 				->setEmptyString('Default or Image'),
-			Injector::inst()->create(Forms\FileHandleField::class,'BackgroundImageLarge','Background Image Desktop<br>( >= 801px)')
+			Injector::inst()->create(Forms\FileHandleField::class,'BackgroundImageLarge',"Background Image Desktop \n( >= 801px)")
 				->setAllowedExtensions(['jpg','jpeg','png'])
 				->setDescription('Recommended Size: 2000px wide'),
-			Injector::inst()->create(Forms\FileHandleField::class,'BackgroundImageMedium','Background Image Tablet<br>(501px - 800px)')
+			Injector::inst()->create(Forms\FileHandleField::class,'BackgroundImageMedium',"Background Image Tablet\n( =< 800px)")
 				->setAllowedExtensions(['jpg','jpeg','png'])
 				->setDescription('Recommended Size: 1024px wide'),
-			Injector::inst()->create(Forms\FileHandleField::class,'BackgroundImageSmall','Background Image Mobile<br>( =< 500px)')
+			Injector::inst()->create(Forms\FileHandleField::class,'BackgroundImageSmall',"Background Image Mobile\n( =< 500px)")
 				->setAllowedExtensions(['jpg','jpeg','png'])
 				->setDescription('Recommended Size: 500px wide'),
+			Forms\FieldGroup::create('Top Border',[
+				Forms\LiteralField::create('_borderColorsDatalist',$borderColorDataList),
+				Forms\TextField::create('_Borders[Top][Color]','Color')
+					->setInputType('color')
+					->addExtraClass('color')
+					->setAttribute('list','_BordersColors'),
+				Forms\NumericField::create('_Borders[Top][Size]','Size (px)')
+					->setAttribute('placeholder','0px')
+			]),
+			Forms\FieldGroup::create('Bottom Border',[
+				Forms\LiteralField::create('_borderColorsDatalist',$borderColorDataList),
+				Forms\TextField::create('_Borders[Bottom][Color]','Color')
+					->setInputType('color')
+					->addExtraClass('color')
+					->setAttribute('list','_BordersColors'),
+				Forms\NumericField::create('_Borders[Bottom][Size]','Size (px)')
+					->setAttribute('placeholder','0px')
+			]),
 			Forms\TextField::create('AdditionalCssClasses','Additional CSS Classes') 
 		]);
 		
@@ -124,6 +155,10 @@ class PageBuilderSection extends DataObject
 		{
 			$this->BackgroundImageSmall()->publishSingle();
 		}
+		if (isset($_REQUEST['_Borders']))
+		{
+			$this->Borders = json_encode($_REQUEST['_Borders']);
+		}
 	}
 	
 	public function ElementHTMLID()
@@ -164,6 +199,16 @@ class PageBuilderSection extends DataObject
 		if ($this->BackgroundImageSmall()->Exists())
 		{
 			$css['Small'][$selector][] = "background-image:url('".$this->BackgroundImageSmall()->getURL()."')";
+		}
+		if ($borders = json_decode($this->Borders,1))
+		{
+			foreach(['Top','Bottom'] as $position)
+			{
+				if ( (isset($borders[$position]['Size'])) && ($borders[$position]['Size']) )
+				{
+					$css['Large'][$selector][] = 'border-'.strtolower($position).':'.intval($borders[$position]['Size']).'px solid '.$borders[$position]['Color'];
+				}
+			}
 		}
 		return $css;
 	}

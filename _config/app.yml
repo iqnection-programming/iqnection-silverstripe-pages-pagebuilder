@@ -4,3 +4,6 @@ Name: pagebuilder
 SilverStripe\ORM\DataObject:
   extensions:
     - IQnection\PageBuilder\Extension\DataObjectExtension
+SilverStripe\Admin\LeftAndMain:
+  extra_requirements_css:
+    - iqnection-pages/pagebuilder:admin/client/cms.css
