@@ -23,8 +23,8 @@ class BlogFeed extends Block
 	];
 	
 	private static $defaults = [
-		'FeedCount' => '3',
-		'ColumnCount' => 1
+		'Limit' => 10,
+		'ColumnCount' => 2
 	];
 	
 	private static $column_counts = [
@@ -44,6 +44,15 @@ class BlogFeed extends Block
 		return $fields;
 	}
 	
+	public function onBeforeWrite()
+	{
+		parent::onBeforeWrite();
+		if (!preg_match('/feed\/?$/',$this->FeedURL))
+		{
+			$this->FeedURL = Controller::join_links($this->FeedURL, 'feed/');
+		}
+	}
+	
 	public function updateCSSClasses(&$cssClasses)
 	{
 		if (intval($this->ColumnCount) > 1)
@@ -57,6 +66,10 @@ class BlogFeed extends Block
 		$body = false;
 		if ($FeedURL = $this->FeedURL)
 		{
+			if (!preg_match('/feed\/?$/',$FeedURL))
+			{
+				$FeedURL = Controller::join_links($FeedURL, 'feed/');
+			}
 			$client = new \GuzzleHttp\Client(['verify' => false]);
 			try {
 				$response = $client->request('GET',$FeedURL);

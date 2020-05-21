@@ -20,6 +20,7 @@ class PageBuilderSection extends DataObject
 	
 	private static $db = [
 		'SortOrder' => 'Int',
+		'EnableBackgroundColor' => 'Boolean',
 		'BackgroundColor' => 'Varchar(20)',
 		'AdditionalCssClasses' => 'Varchar(255)',
 		'Borders' => 'Text',
@@ -73,7 +74,8 @@ class PageBuilderSection extends DataObject
 			'BackgroundImageLarge',
 			'BackgroundImageMedium',
 			'BackgroundImageSmall',
-			'Borders'
+			'Borders',
+			'EnableBackgroundColor'
 		]);
 		$fields->addFieldToTab('Root.Style', Forms\TextField::create('AdditionalCssClasses','Additional CSS Classes'));
 		
@@ -82,15 +84,18 @@ class PageBuilderSection extends DataObject
 			$backgroundColorDataList = '<datalist id="_BackgroundColors">';
 			foreach($background_colors as $hex => $cssClass)
 			{
-				$backgroundColorDataList .= '<option>'.$hex.'</option>';
+				$backgroundColorDataList .= '<option>'.strtolower($hex).'</option>';
 			}
 			$backgroundColorDataList .= '</datalist>';
 			$fields->addFieldsToTab('Root.Style', [
 				Forms\LiteralField::create('_backgroundColorsDatalist',$backgroundColorDataList),
-				Forms\TextField::Create('BackgroundColor','Background Color')
-					->setInputType('color')
-					->addExtraClass('color')
-					->setAttribute('list','_BackgroundColors'),
+				Forms\FieldGroup::create('Background Color', [
+					Forms\CheckboxField::create('EnableBackgroundColor','Use Selected Color'),
+					Forms\TextField::Create('BackgroundColor','Color')
+						->setInputType('color')
+						->addExtraClass('color')
+						->setAttribute('list','_BackgroundColors'),
+				])
 			]);
 		}
 		$fields->addFieldsToTab('Root.Style', [
@@ -198,9 +203,14 @@ class PageBuilderSection extends DataObject
 	{
 		$classes = explode(',',preg_replace('/\s/',',',$this->AdditionalCssClasses));
 		$classes[] = 'page-builder-section';
-		if ($this->BackgroundColor)
+		if ( ($this->EnableBackgroundColor) && ($this->BackgroundColor) )
 		{
 			$backgroundColors = $this->Config()->get('background_colors');
+			$backgroundColors = array_flip($backgroundColors);
+			array_walk($backgroundColors, function(&$val) {
+				$val = strtolower($val);
+			});
+			$backgroundColors = array_flip($backgroundColors);
 			$classes[] = $backgroundColors[$this->BackgroundColor];
 		}
 		$classes[] = strtolower(preg_replace('/^\-|\-$/','',preg_replace('/([A-Z])/','-$1',ClassInfo::shortName($this))));
@@ -242,7 +252,7 @@ class PageBuilderSection extends DataObject
 				}
 			}
 		}
-		$this->invokeWithExtensions('updateCustomCSS',$classes);
+		$this->invokeWithExtensions('updateCustomCSS',$css);
 		return $css;
 	}
 	

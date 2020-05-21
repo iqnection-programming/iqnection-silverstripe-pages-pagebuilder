@@ -12,11 +12,12 @@ class Headline extends Block
 	private static $db = [
 		'Headline' => 'Varchar(255)',
 		'Type' => "Enum('H1,H2,H3,H4,H5,H6','H2')",
-		'Color' => 'Varchar(20)',//"Enum('Default,Blue,Light Blue,Grey,Black,White','Default')",
-		'Alignment' => 'Varchar(20)',//"Enum('Default,Left,Center,Right','Default')",
-		'Transform' => 'Varchar(20)',//"Enum('Default,Uppercase,Lowercase','Default')",
-		'Weight' => 'Varchar(20)',//"Enum('Default,Lite,Regular,Medium,Semi-Bold,Bold,Extrabold','Default')",
-		'Style' => 'Varchar(20)',//"Enum('Default,Normal,Italic','Default')",
+		'EnableColor' => 'Boolean',
+		'Color' => 'Varchar(20)',
+		'Alignment' => 'Varchar(20)',
+		'Transform' => 'Varchar(20)',
+		'Weight' => 'Varchar(20)',
+		'Style' => 'Varchar(20)',
 		'Size' => 'Text',
 	];
 	
@@ -61,22 +62,28 @@ class Headline extends Block
 	public function getCMSFields()
 	{
 		$fields = parent::getCMSFields();
-		$fields->removeByName(['Size']);
+		$fields->removeByName([
+			'Size',
+			'EnableColor'
+		]);
 		$fontSizes = $this->getFontSizes();
 		if (count($this->Config()->get('colors')))
 		{
 			$colorDataList = '<datalist id="_Colors">';
 			foreach($this->Config()->get('colors') as $hex => $cssClass)
 			{
-				$colorDataList .= '<option>'.$hex.'</option>';
+				$colorDataList .= '<option>'.strtolower($hex).'</option>';
 			}
 			$colorDataList .= '</datalist>';
 			$fields->addFieldsToTab('Root.Style', [
 				Forms\LiteralField::create('_colorsDatalist',$colorDataList),
-				Forms\TextField::Create('Color','Color')
-					->setInputType('color')
-					->addExtraClass('color')
-					->setAttribute('list','_Colors'),
+				Forms\FieldGroup::create('Color', [
+					Forms\CheckboxField::create('EnableColor','Use Selected Color'),
+					Forms\TextField::Create('Color','Color')
+						->setInputType('color')
+						->addExtraClass('color')
+						->setAttribute('list','_Colors')
+				])
 			]);
 		}
 		$fields->addFieldsToTab('Root.Style', [
@@ -128,9 +135,15 @@ class Headline extends Block
 	
 	public function updateCSSClasses(&$cssClasses)
 	{
-		if ($this->Color)
+		if ( ($this->EnableColor) && ($this->Color) )
 		{
-			$cssClasses[] = $this->cleanCssClassName('text-'.$this->Color);
+			$colors = $this->Config()->get('colors');
+			$colors = array_flip($colors);
+			array_walk($colors, function(&$val) {
+				$val = strtolower($val);
+			});
+			$colors = array_flip($colors);
+			$cssClasses[] = $this->cleanCssClassName($colors[$this->Color]);
 		}
 		if ($this->Alignment)
 		{

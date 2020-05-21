@@ -48,9 +48,9 @@ class PageBuilder extends \Page
 		}
 		if (count($sectionTypes) > 1)
 		{
-			if (!class_exists('GridFieldExtensions\\GridFieldAddNewMultiClass'))
+			if (!class_exists('\\Symbiote\\GridFieldExtensions\\GridFieldAddNewMultiClass'))
 			{
-				$fields->addFieldToTab('Root.Main', HeaderField::create('_error','This module requires the class GridFieldExtensions\\GridFieldAddNewMultiClass') );
+				$fields->addFieldToTab('Root.Main', Forms\HeaderField::create('_error','This module requires the class GridFieldExtensions::GridFieldAddNewMultiClass') );
 				return $fields;
 			}
 			$PageBuilderSections_config->addComponent($GridFieldAddNewMultiClass = new GridFieldExtensions\GridFieldAddNewMultiClass());

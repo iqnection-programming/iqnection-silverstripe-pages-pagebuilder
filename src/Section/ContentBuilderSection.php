@@ -30,9 +30,9 @@ class ContentBuilderSection extends PageBuilderSection
 		$fields->removeByName(['ContentBuilderBlocks']);
 		if ($this->Exists())
 		{
-			if (!class_exists('GridFieldExtensions\\GridFieldAddNewMultiClass'))
+			if (!class_exists('\\Symbiote\\GridFieldExtensions\\GridFieldAddNewMultiClass'))
 			{
-				$fields->addFieldToTab('Root.Main', HeaderField::create('_error','This module requires the class GridFieldExtensions\\GridFieldAddNewMultiClass') );
+				$fields->addFieldToTab('Root.Main', Forms\HeaderField::create('_error','This module requires the class \\GridFieldExtensions\\GridFieldAddNewMultiClass') );
 				return $fields;
 			}
 			$fields->addFieldToTab('Root.Main', Forms\GridField\GridField::create(
@@ -83,9 +83,8 @@ class ContentBuilderSection extends PageBuilderSection
 		}
 	}
 	
-	public function getCustomCSS()
+	public function updateCustomCSS(&$customCss)
 	{
-		$customCss = parent::getCustomCSS();
 		foreach($this->ContentBuilderBlocks() as $block)
 		{
 			$blockCss = $block->getCustomCSS();
@@ -93,6 +92,5 @@ class ContentBuilderSection extends PageBuilderSection
 			$customCss['Medium'] = array_merge($customCss['Medium'], $blockCss['Medium']);
 			$customCss['Small'] = array_merge($customCss['Small'], $blockCss['Small']);
 		}
-		return $customCss;
 	}
 }
