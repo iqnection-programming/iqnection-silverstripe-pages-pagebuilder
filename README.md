@@ -32,6 +32,7 @@ Sections can be set to have background colors or images.
 To set background colors, you must first declare the class in your stylesheets
 Then add a config value for each class declared
 Each value should be a key value, where the key is the CSS hex or rgba, and the value should be the class that will be assigned to the block
+
 `
 IQnection\PageBuilder\Section\PageBuilderSection:
   background_colors:
@@ -51,11 +52,14 @@ IQnection\PageBuilder\Section\PageBuilderSection:
 ### Headline Block
 Set key value pairs for the color and class to assign the font color
 Declare a class in your stylesheet that sets the font color
+
 `
 .text-black,
 .text-black * { color:#000000 !important; }
 `
+
 Then add the value to your config to make it a selection
+
 `
 IQnection\PageBuilder\ContentBuilder\Block\Headline:
   colors:
@@ -66,6 +70,7 @@ Set the cache lifetime for the feed
 Use the format expected for php `strtotime()`
 defaults to 1 hour
 `
+
 IQnection\PageBuilder\ContentBuilder\Block\BlogFeed:
   feed_cache_lifetime: '-1 hour'
 `
