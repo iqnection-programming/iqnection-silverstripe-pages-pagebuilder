@@ -1,16 +1,12 @@
-# iqnection-silverstripe-pages-pagebuilder
-SilverStripe Minisite Page
-
-# CMS Page Builder
+# SilverStripe CMS Page Builder
 Provides an interface to build out a custom content page.
 Includes Content Builder Section
-[Previews are still in development]
+[CMS Previews are still in development]
 
-
-## Custom Modules
-Custom modules can be created by extending class IQnection\PageBuilder\Section\PageBuilderSection
-Sections might include forms, or predefined layouts, whatever you can build
-
+## Installation
+```
+composer require iqnection-pages/pagebuilder
+```
 
 ## Content Builder Section
 This section allows you to stack modules for unique content layouts. 
@@ -21,10 +17,8 @@ Includes blocks for:
 - Two column content
 - RSS Blog feed (developed for WordPress feed)
 
-
 ### Custom Content Builder Blocks
 Extend IQnection\PageBuilder\ContentBuilder\Block\Block to build your own
-
 
 ## Config
 ### Section Background Colors
@@ -38,7 +32,6 @@ IQnection\PageBuilder\Section\PageBuilderSection:
     '#000000': 'bg-black'
     '#ffffff': 'bg-white'
 ```
-
 You can also assign borders to the top and bottom
 This CSS is generated for you, so all you need to do is provide the colors to select from
 ```
@@ -71,6 +64,10 @@ defaults to 1 hour
 IQnection\PageBuilder\ContentBuilder\Block\BlogFeed:
   feed_cache_lifetime: '-1 hour'
 ```
+
+## Custom Modules
+Custom modules can be created by extending class IQnection\PageBuilder\Section\PageBuilderSection
+Sections might include forms, or predefined layouts, whatever you can build
 
 ## Hooks
 IQnection\PageBuilder\PageBuilder:
