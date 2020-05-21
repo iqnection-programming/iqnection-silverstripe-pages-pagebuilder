@@ -30,6 +30,11 @@ class ContentBuilderSection extends PageBuilderSection
 		$fields->removeByName(['ContentBuilderBlocks']);
 		if ($this->Exists())
 		{
+			if (!class_exists('GridFieldExtensions\\GridFieldAddNewMultiClass'))
+			{
+				$fields->addFieldToTab('Root.Main', HeaderField::create('_error','This module requires the class GridFieldExtensions\\GridFieldAddNewMultiClass') );
+				return $fields;
+			}
 			$fields->addFieldToTab('Root.Main', Forms\GridField\GridField::create(
 				'ContentBuilderBlocks',
 				'Blocks',

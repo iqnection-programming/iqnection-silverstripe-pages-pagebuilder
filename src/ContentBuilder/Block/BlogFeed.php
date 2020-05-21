@@ -36,7 +36,8 @@ class BlogFeed extends Block
 		$fields = parent::getCMSFields();
 		$fields->addFieldsToTab('Root.Main', [
 			Forms\TextField::Create('FeedURL','Feed URL'),
-			Forms\NumericField::Create('Limit','Limit'),
+			Forms\NumericField::Create('Limit','Limit')
+				->setDescription('Be sure your blog provides at least this many posts in the RSS feed'),
 			Forms\OptionsetField::Create('ColumnCount','Columns')
 				->setSource(array_combine($this->Config()->get('column_counts'),$this->Config()->get('column_counts')))
 			]);

@@ -24,14 +24,13 @@ class Headline extends Block
 		'Type' => 'H2',
 	];
 	
-	private static $colors = [
-		'Blue',
-		'Light Blue',
-		'Grey',
-		'Black',
-		'White',
-		'Orange'
-	];
+	/**
+	 * Set values in site yml config
+	 * expects array of key: value
+	 * where key is the hex color to show in the color selector
+	 * and value is the CSS class declared in your CSS file
+	 */
+	private static $colors = [];
 	
 	private static $alignments = [
 		'Left',
@@ -62,11 +61,25 @@ class Headline extends Block
 	public function getCMSFields()
 	{
 		$fields = parent::getCMSFields();
+		$fields->removeByName(['Size']);
 		$fontSizes = $this->getFontSizes();
+		if (count($this->Config()->get('colors')))
+		{
+			$colorDataList = '<datalist id="_Colors">';
+			foreach($this->Config()->get('colors') as $hex => $cssClass)
+			{
+				$colorDataList .= '<option>'.$hex.'</option>';
+			}
+			$colorDataList .= '</datalist>';
+			$fields->addFieldsToTab('Root.Style', [
+				Forms\LiteralField::create('_colorsDatalist',$colorDataList),
+				Forms\TextField::Create('Color','Color')
+					->setInputType('color')
+					->addExtraClass('color')
+					->setAttribute('list','_Colors'),
+			]);
+		}
 		$fields->addFieldsToTab('Root.Style', [
-			Forms\DropdownField::Create('Color','Color')
-				->setSource(array_combine($this->Config()->get('colors'),$this->Config()->get('colors')))
-				->setEmptyString('Default'),
 			Forms\DropdownField::Create('Alignment','Alignment')
 				->setSource(array_combine($this->Config()->get('alignments'),$this->Config()->get('alignments')))
 				->setEmptyString('Default'),
@@ -137,9 +150,8 @@ class Headline extends Block
 		}
 	}
 	
-	public function getCustomCSS()
+	public function updateCustomCSS(&$customCss)
 	{
-		$customCss = parent::getCustomCSS();
 		$fontSizes = $this->getFontSizes();
 		if ($fontSizes['Large'])
 		{
@@ -153,7 +165,6 @@ class Headline extends Block
 		{
 			$customCss['Small']['#'.$this->ElementHTMLID().' > .headline'][] = 'font-size:'.$fontSizes['Small'];
 		}
-		return $customCss;
 	}
 	
 	public function getDescription()

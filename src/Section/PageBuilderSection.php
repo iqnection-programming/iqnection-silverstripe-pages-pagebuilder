@@ -48,17 +48,19 @@ class PageBuilderSection extends DataObject
 		'BackgroundImageSmall',
 	];
 	
-	private static $background_colors = [
-		'White',
-		'Blue',
-		'Grey'
-	];
+	/**
+	 * Set values in site yml config
+	 * expects array of key: value
+	 * where key is the hex color to show in the color selector
+	 * and value is the CSS class declared in your CSS files
+	 */
+	private static $background_colors = [];
 	
-	private static $border_colors = [
-		'#032042',// => 'Blue',
-		'#000000',// => 'Black',
-		'#ffcc00',// => 'Yellow'
-	];
+	/**
+	 * Set values in site yml config
+	 * expects only color values
+	 */
+	private static $border_colors = [];
 	
 	private static $default_sort = 'SortOrder ASC';
 	
@@ -73,17 +75,26 @@ class PageBuilderSection extends DataObject
 			'BackgroundImageSmall',
 			'Borders'
 		]);
-		$borderColorDataList = '<datalist id="_BordersColors">';
-		foreach($this->Config()->get('border_colors') as $title)
+		$fields->addFieldToTab('Root.Style', Forms\TextField::create('AdditionalCssClasses','Additional CSS Classes'));
+		
+		if ( ($background_colors = $this->Config()->get('background_colors')) && (count($background_colors)) )
 		{
-			$borderColorDataList .= '<option>'.$title.'</option>';
+			$backgroundColorDataList = '<datalist id="_BackgroundColors">';
+			foreach($background_colors as $hex => $cssClass)
+			{
+				$backgroundColorDataList .= '<option>'.$hex.'</option>';
+			}
+			$backgroundColorDataList .= '</datalist>';
+			$fields->addFieldsToTab('Root.Style', [
+				Forms\LiteralField::create('_backgroundColorsDatalist',$backgroundColorDataList),
+				Forms\TextField::Create('BackgroundColor','Background Color')
+					->setInputType('color')
+					->addExtraClass('color')
+					->setAttribute('list','_BackgroundColors'),
+			]);
 		}
-		$borderColorDataList .= '</datalist>';
 		$fields->addFieldsToTab('Root.Style', [
-			Forms\DropdownField::Create('BackgroundColor','Background Color')
-				->setSource(array_combine($this->Config()->get('background_colors'),$this->Config()->get('background_colors')))
-				->setEmptyString('Default or Image'),
-			Injector::inst()->create(Forms\FileHandleField::class,'BackgroundImageLarge',"Background Image Desktop \n( >= 801px)")
+			Injector::inst()->create(Forms\FileHandleField::class,'BackgroundImageLarge',"Background Image Desktop \n( > 800px)")
 				->setAllowedExtensions(['jpg','jpeg','png'])
 				->setDescription('Recommended Size: 2000px wide'),
 			Injector::inst()->create(Forms\FileHandleField::class,'BackgroundImageMedium',"Background Image Tablet\n( =< 800px)")
@@ -91,27 +102,44 @@ class PageBuilderSection extends DataObject
 				->setDescription('Recommended Size: 1024px wide'),
 			Injector::inst()->create(Forms\FileHandleField::class,'BackgroundImageSmall',"Background Image Mobile\n( =< 500px)")
 				->setAllowedExtensions(['jpg','jpeg','png'])
-				->setDescription('Recommended Size: 500px wide'),
-			Forms\FieldGroup::create('Top Border',[
-				Forms\LiteralField::create('_borderColorsDatalist',$borderColorDataList),
-				Forms\TextField::create('_Borders[Top][Color]','Color')
-					->setInputType('color')
-					->addExtraClass('color')
-					->setAttribute('list','_BordersColors'),
-				Forms\NumericField::create('_Borders[Top][Size]','Size (px)')
-					->setAttribute('placeholder','0px')
-			]),
-			Forms\FieldGroup::create('Bottom Border',[
-				Forms\LiteralField::create('_borderColorsDatalist',$borderColorDataList),
-				Forms\TextField::create('_Borders[Bottom][Color]','Color')
-					->setInputType('color')
-					->addExtraClass('color')
-					->setAttribute('list','_BordersColors'),
-				Forms\NumericField::create('_Borders[Bottom][Size]','Size (px)')
-					->setAttribute('placeholder','0px')
-			]),
-			Forms\TextField::create('AdditionalCssClasses','Additional CSS Classes') 
+				->setDescription('Recommended Size: 500px wide')
 		]);
+		
+		if ( ($border_colors = $this->Config()->get('border_colors')) && (count($border_colors)) )
+		{
+			$borderColorDataList = '<datalist id="_BordersColors">';
+			foreach($border_colors as $hex)
+			{
+				$borderColorDataList .= '<option>'.$hex.'</option>';
+			}
+			$borderColorDataList .= '</datalist>';
+			$selectedBorders = json_decode($this->Borders,1);
+			
+			$fields->addFieldsToTab('Root.Style', [
+				Forms\FieldGroup::create('Top Border',[
+					Forms\LiteralField::create('_borderColorsDatalist',$borderColorDataList),
+					Forms\TextField::create('_Borders[Top][Color]','Color')
+						->setInputType('color')
+						->addExtraClass('color')
+						->setAttribute('list','_BordersColors')
+						->setValue(isset($selectedBorders['Top']['Color']) ? $selectedBorders['Top']['Color'] : null),
+					Forms\NumericField::create('_Borders[Top][Size]','Size (px)')
+						->setAttribute('placeholder','0px')
+						->setValue(isset($selectedBorders['Top']['Size']) ? $selectedBorders['Top']['Size'] : null)
+				]),
+				Forms\FieldGroup::create('Bottom Border',[
+					Forms\LiteralField::create('_borderColorsDatalist',$borderColorDataList),
+					Forms\TextField::create('_Borders[Bottom][Color]','Color')
+						->setInputType('color')
+						->addExtraClass('color')
+						->setAttribute('list','_BordersColors')
+						->setValue(isset($selectedBorders['Bottom']['Color']) ? $selectedBorders['Bottom']['Color'] : null),
+					Forms\NumericField::create('_Borders[Bottom][Size]','Size (px)')
+						->setAttribute('placeholder','0px')
+						->setValue(isset($selectedBorders['Bottom']['Size']) ? $selectedBorders['Bottom']['Size'] : null)
+				])
+			]);
+		}
 		
 		if ($this->Exists())
 		{
@@ -170,7 +198,11 @@ class PageBuilderSection extends DataObject
 	{
 		$classes = explode(',',preg_replace('/\s/',',',$this->AdditionalCssClasses));
 		$classes[] = 'page-builder-section';
-		$classes[] = 'bg-'.strtolower($this->BackgroundColor);
+		if ($this->BackgroundColor)
+		{
+			$backgroundColors = $this->Config()->get('background_colors');
+			$classes[] = $backgroundColors[$this->BackgroundColor];
+		}
 		$classes[] = strtolower(preg_replace('/^\-|\-$/','',preg_replace('/([A-Z])/','-$1',ClassInfo::shortName($this))));
 		if ( ($this->BackgroundImageLarge()->Exists()) || ($this->BackgroundImageMedium()->Exists()) || ($this->BackgroundImageSmall()->Exists()) )
 		{
@@ -210,6 +242,7 @@ class PageBuilderSection extends DataObject
 				}
 			}
 		}
+		$this->invokeWithExtensions('updateCustomCSS',$classes);
 		return $css;
 	}
 	

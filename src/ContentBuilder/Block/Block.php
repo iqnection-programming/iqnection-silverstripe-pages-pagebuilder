@@ -46,6 +46,13 @@ class Block extends DataObject
 		return $fields;
 	}
 	
+	public function getBetterButtonsActions()
+	{
+		$actions = parent::getBetterButtonsActions();
+		$actions->removeByName(['action_doSaveAndAdd']);
+		return $actions;
+	}
+	
 	protected function cleanCssClassName($cssClass)
 	{
 		return preg_replace('/[^a-z0-9\-_]/','-',strtolower($cssClass));
@@ -75,11 +82,13 @@ class Block extends DataObject
 	
 	public function getCustomCSS()
 	{
-		return [
+		$customCSS = [
 			'Large' => [],
 			'Medium' => [],
 			'Small' => []
 		];
+		$this->invokeWithExtensions('updateCustomCSS', $customCSS);
+		return $customCSS;
 	}
 	
 	public function onAfterWrite()

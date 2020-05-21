@@ -48,6 +48,11 @@ class PageBuilder extends \Page
 		}
 		if (count($sectionTypes) > 1)
 		{
+			if (!class_exists('GridFieldExtensions\\GridFieldAddNewMultiClass'))
+			{
+				$fields->addFieldToTab('Root.Main', HeaderField::create('_error','This module requires the class GridFieldExtensions\\GridFieldAddNewMultiClass') );
+				return $fields;
+			}
 			$PageBuilderSections_config->addComponent($GridFieldAddNewMultiClass = new GridFieldExtensions\GridFieldAddNewMultiClass());
 			$PageBuilderSections_config->removeComponentsByType(Forms\GridField\GridFieldAddNewButton::class);
 			$GridFieldAddNewMultiClass->setTitle('Add Section')
@@ -114,6 +119,7 @@ class PageBuilder extends \Page
 			$customCss['Medium'] = array_merge($customCss['Medium'], $sectionCustomCss['Medium']);
 			$customCss['Small'] = array_merge($customCss['Small'], $sectionCustomCss['Small']);
 		}
+		$this->extend('updateCustomCSS', $customCss);
 		return $customCss;
 	}
 }
