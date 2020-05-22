@@ -47,7 +47,7 @@ class BlogFeed extends Block
 	public function onBeforeWrite()
 	{
 		parent::onBeforeWrite();
-		if (!preg_match('/feed\/?$/',$this->FeedURL))
+		if (!preg_match('/feed\/?/',$this->FeedURL))
 		{
 			$this->FeedURL = Controller::join_links($this->FeedURL, 'feed/');
 		}
@@ -66,7 +66,7 @@ class BlogFeed extends Block
 		$body = false;
 		if ($FeedURL = $this->FeedURL)
 		{
-			if (!preg_match('/feed\/?$/',$FeedURL))
+			if (!preg_match('/feed\/?/',$FeedURL))
 			{
 				$FeedURL = Controller::join_links($FeedURL, 'feed/');
 			}
