@@ -2,13 +2,14 @@
 
 /*-- Content Builder Content Content --*/
 .content-builder-block-element.content-content		{ display:flex; justify-content:space-between; align-items:stretch;
-	&--half > *										{ width:100%; margin:4% 0 0; }
-	&--half											{ flex-direction:column; align-items:center; }
+	> *												{ width:100%; margin:4% 0 0; }
 	
 	@media(min-width:801px) {
-		&--left										{ order:1; }
-		&--right									{ order:2; }
-		&--half										{ flex-direction:row; align-items:stretch; }
-		&--half > *									{ max-width:48%; margin-top:0; }
+		.flex--left									{ order:1; }
+		.flex--right								{ order:2; }
+		> *											{ max-width:48%; margin-top:0; }
+	}
+	@media(max-width:800px){
+		&											{ flex-direction:column; align-items:center; }
 	}
 }

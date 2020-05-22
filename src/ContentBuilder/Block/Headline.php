@@ -12,7 +12,6 @@ class Headline extends Block
 	private static $db = [
 		'Headline' => 'Varchar(255)',
 		'Type' => "Enum('H1,H2,H3,H4,H5,H6','H2')",
-		'EnableColor' => 'Boolean',
 		'Color' => 'Varchar(20)',
 		'Alignment' => 'Varchar(20)',
 		'Transform' => 'Varchar(20)',
@@ -27,9 +26,9 @@ class Headline extends Block
 	
 	/**
 	 * Set values in site yml config
-	 * expects array of key: value
-	 * where key is the hex color to show in the color selector
-	 * and value is the CSS class declared in your CSS file
+	 * expects array of key: value pairs
+	 * where key is the title to display in the dropdown
+	 * and value is the css class declared in your stylesheet
 	 */
 	private static $colors = [];
 	
@@ -69,22 +68,11 @@ class Headline extends Block
 		$fontSizes = $this->getFontSizes();
 		if (count($this->Config()->get('colors')))
 		{
-			$colorDataList = '<datalist id="_Colors">';
-			foreach($this->Config()->get('colors') as $hex => $cssClass)
-			{
-				$colorDataList .= '<option>'.strtolower($hex).'</option>';
-			}
-			$colorDataList .= '</datalist>';
-			$fields->addFieldsToTab('Root.Style', [
-				Forms\LiteralField::create('_colorsDatalist',$colorDataList),
-				Forms\FieldGroup::create('Color', [
-					Forms\CheckboxField::create('EnableColor','Use Selected Color'),
-					Forms\TextField::Create('Color','Color')
-						->setInputType('color')
-						->addExtraClass('color')
-						->setAttribute('list','_Colors')
-				])
-			]);
+			$fields->addFieldToTab('Root.Style', 
+				Forms\DropdownField::Create('Color','Color')
+					->setSource(array_flip($this->Config()->get('colors')))
+					->setEmptyString('Default')
+			);
 		}
 		$fields->addFieldsToTab('Root.Style', [
 			Forms\DropdownField::Create('Alignment','Alignment')
@@ -135,15 +123,9 @@ class Headline extends Block
 	
 	public function updateCSSClasses(&$cssClasses)
 	{
-		if ( ($this->EnableColor) && ($this->Color) )
+		if ($this->Color)
 		{
-			$colors = $this->Config()->get('colors');
-			$colors = array_flip($colors);
-			array_walk($colors, function(&$val) {
-				$val = strtolower($val);
-			});
-			$colors = array_flip($colors);
-			$cssClasses[] = $this->cleanCssClassName($colors[$this->Color]);
+			$cssClasses[] = $this->cleanCssClassName($this->Color);
 		}
 		if ($this->Alignment)
 		{

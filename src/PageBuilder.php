@@ -32,7 +32,7 @@ class PageBuilder extends \Page
 		]);
 		$fields->addFieldToTab('Root.Main', $PageBuilderSections_gf = Forms\GridField\GridField::create(
 			'PageBuilderSections',
-			'Sections',
+			'Panels',
 			$this->PageBuilderSections(),
 			$PageBuilderSections_config = Forms\GridField\GridFieldConfig_RecordEditor::create(100)
 				->addComponent(new GridFieldSortableRows('SortOrder'))
