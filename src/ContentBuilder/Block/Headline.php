@@ -82,7 +82,7 @@ class Headline extends Block
 				->setSource(array_combine($this->Config()->get('transforms'),$this->Config()->get('transforms')))
 				->setEmptyString('Default'),
 			Forms\DropdownField::Create('Weight','Weight')
-				->setSource($this->Config()->get('weights'))
+				->setSource(array_combine($this->Config()->get('weights'),$this->Config()->get('weights')))
 				->setEmptyString('Default'),
 			Forms\DropdownField::Create('Style','Style')
 				->setSource(array_combine($this->Config()->get('styles'),$this->Config()->get('styles')))
