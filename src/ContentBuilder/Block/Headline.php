@@ -45,12 +45,8 @@ class Headline extends Block
 	];
 	
 	private static $weights = [
-		'Lite', // 300
-		'Regular', // 400
-		'Medium', // 500
-		'Semi-Bold', // 600
-		'Bold', // 700
-		'Extrabold' // 800
+		400 => 'Regular', // 400
+		700 => 'Bold', // 700
 	];
 	
 	private static $styles = [
@@ -74,6 +70,9 @@ class Headline extends Block
 					->setEmptyString('Default')
 			);
 		}
+		$weights = $this->Config()->get('weights');
+		ksort($weights);
+		
 		$fields->addFieldsToTab('Root.Style', [
 			Forms\DropdownField::Create('Alignment','Alignment')
 				->setSource(array_combine($this->Config()->get('alignments'),$this->Config()->get('alignments')))
@@ -82,7 +81,7 @@ class Headline extends Block
 				->setSource(array_combine($this->Config()->get('transforms'),$this->Config()->get('transforms')))
 				->setEmptyString('Default'),
 			Forms\DropdownField::Create('Weight','Weight')
-				->setSource(array_combine($this->Config()->get('weights'),$this->Config()->get('weights')))
+				->setSource(array_combine($weights,$weights))
 				->setEmptyString('Default'),
 			Forms\DropdownField::Create('Style','Style')
 				->setSource(array_combine($this->Config()->get('styles'),$this->Config()->get('styles')))
