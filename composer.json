@@ -15,7 +15,8 @@
 		"undefinedoffset/sortablegridfield": "*",
 		"symbiote/silverstripe-gridfieldextensions": "^3",
 		"iqnection-themes/mysite": "^2",
-		"iqnection-pages/basepages":"^2.0"
+		"iqnection-pages/basepages":"^2.0",
+		"guzzlehttp/guzzle":"~6.0"
 	},
 	"extra": {
 		"expose": [
