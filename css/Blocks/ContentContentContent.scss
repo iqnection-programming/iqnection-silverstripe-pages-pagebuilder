@@ -1,0 +1,13 @@
+@import '../base';
+
+/*-- Content Builder Content Content Content --*/
+.content-builder-block-element.content-content-content		{ display:flex; justify-content:space-between; align-items:stretch;
+	> .flex--col											{ width:100%; margin:4% 0 0; }
+	
+	@media(min-width:801px) {
+		> .flex--col										{ max-width:30.666%; margin-top:0; }
+	}
+	@media(max-width:800px){
+		&													{ flex-direction:column; align-items:center; }
+	}
+}
