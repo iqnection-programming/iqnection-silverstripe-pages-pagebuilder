@@ -69,10 +69,10 @@ class HorizontalBar extends Block
 	{
 		if ($this->Height)
 		{
-			$customCss['Large']['#'.$this->ElementHTMLID().' > .bar'][] = 'height:'.$this->Height;
+			$customCss['Large']['#'.$this->ElementHTMLID().' > .horizontal-bar'][] = 'height:'.$this->Height;
 			if ( ($this->Color) && (!in_array($this->Color, $this->Config()->get('colors'))) )
 			{
-				$customCss['Large']['#'.$this->ElementHTMLID().' > .bar'][] = 'background-color:'.$this->Color;
+				$customCss['Large']['#'.$this->ElementHTMLID().' > .horizontal-bar'][] = 'background-color:'.$this->Color;
 			}
 		}
 	}
