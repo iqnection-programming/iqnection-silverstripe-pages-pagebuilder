@@ -20,6 +20,7 @@ class Block extends DataObject
 	private static $db = [
 		'SortOrder' => 'Int',
 		'AdditionalCssClasses' => 'Varchar(255)',
+		'Width' => 'Varchar(255)',
 	];
 	
 	private static $has_one = [
@@ -33,11 +34,31 @@ class Block extends DataObject
 	
 	private static $default_sort = 'SortOrder ASC';
 	
+	/**
+	 * Set values in site yml config
+	 * expects array of key: value pairs
+	 * where key is the title to display in the dropdown
+	 * and value is the css class declared in your stylesheet
+	 */
+	private static $widths = [
+		'Content Width' => 'page-width',
+		'Full Width' => 'window-width'
+	];
+	
 	public function getCMSFields()
 	{
 		$fields = parent::getCMSFields();
 		$fields->removeByName(['SortOrder','ContentBuilderSectionID']);
 		$fields->addFieldToTab('Root.Style', Forms\TextField::create('AdditionalCssClasses','Additional CSS Classes') );
+		
+		if ( ($widths = $this->Config()->get('widths')) && (count($widths)) )
+		{
+			$fields->addFieldToTab('Root.Style', 
+				Forms\DropdownField::Create('Width','Width')
+					->setSource(array_flip($this->Config()->get('widths')))
+					->setEmptyString('Default')
+			);
+		}
 		
 		if ($this->Exists())
 		{
