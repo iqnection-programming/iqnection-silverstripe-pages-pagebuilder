@@ -26,7 +26,7 @@ class PageBuilder extends \Page
 		$fields = parent::getCMSFields();
 		$fields->removeByName([
 			'Content',
-			'MinisiteLayout',
+			'ActivateMinisite',
 			'Sidebar',
 			'Blog Feed'
 		]);

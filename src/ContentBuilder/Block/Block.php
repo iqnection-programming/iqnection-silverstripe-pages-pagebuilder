@@ -62,6 +62,10 @@ class Block extends DataObject
 	{
 		$classes = explode(',',preg_replace('/\s/',',',$this->AdditionalCssClasses));
 		$classes[] = strtolower(preg_replace('/^\-|\-$/','',preg_replace('/([A-Z])/','-$1',ClassInfo::shortName($this)))).'-container';
+		if ($this->Width)
+		{
+			$classes[] = $this->cleanCssClassName($this->Width);
+		}
 		$this->invokeWithExtensions('updateSectionCSSClasses',$classes);
 		return ($asString) ? implode(' ',$classes) : $classes;
 	}

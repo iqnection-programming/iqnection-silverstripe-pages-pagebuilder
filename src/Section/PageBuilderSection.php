@@ -21,7 +21,6 @@ class PageBuilderSection extends DataObject
 	
 	private static $db = [
 		'SortOrder' => 'Int',
-		'EnableBackgroundColor' => 'Boolean',
 		'BackgroundColor' => 'Varchar(20)',
 		'AdditionalCssClasses' => 'Varchar(255)',
 		'Borders' => 'Text',
@@ -91,7 +90,7 @@ class PageBuilderSection extends DataObject
 			);
 		}
 		$fields->addFieldsToTab('Root.Style', [
-			Injector::inst()->create(Forms\FileHandleField::class,'BackgroundImageLarge',"Background Image Desktop \n( > 800px)")
+			Injector::inst()->create(Forms\FileHandleField::class,'BackgroundImageLarge',"Background Image")
 				->setAllowedExtensions(['jpg','jpeg','png'])
 				->setDescription('Recommended Size: 2000px wide'),
 			Injector::inst()->create(Forms\FileHandleField::class,'BackgroundImageMedium',"Background Image Tablet\n( =< 800px)")
@@ -111,7 +110,7 @@ class PageBuilderSection extends DataObject
 						->setEmptyString('Default')
 						->setValue(isset($selectedBorders['Top']['Color']) ? $selectedBorders['Top']['Color'] : null),
 					Forms\NumericField::create('_Borders[Top][Size]','Size (px)')
-						->setAttribute('placeholder','0px')
+						->setAttribute('placeholder','0')
 						->setValue(isset($selectedBorders['Top']['Size']) ? $selectedBorders['Top']['Size'] : null)
 				]),
 				Forms\FieldGroup::create('Bottom Border',[
@@ -120,7 +119,7 @@ class PageBuilderSection extends DataObject
 						->setEmptyString('Default')
 						->setValue(isset($selectedBorders['Bottom']['Color']) ? $selectedBorders['Bottom']['Color'] : null),
 					Forms\NumericField::create('_Borders[Bottom][Size]','Size (px)')
-						->setAttribute('placeholder','0px')
+						->setAttribute('placeholder','0')
 						->setValue(isset($selectedBorders['Bottom']['Size']) ? $selectedBorders['Bottom']['Size'] : null)
 				])
 			]);

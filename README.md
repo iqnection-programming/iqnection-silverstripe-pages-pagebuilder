@@ -15,6 +15,8 @@ Includes blocks for:
 - Headline
 - Full width content
 - Two column content
+- Three collumn content
+- Horizontal bar
 - RSS Blog feed (developed for WordPress feed)
 
 ### Custom Content Builder Blocks
@@ -29,16 +31,16 @@ Each value should be a key value, where the key is the CSS hex or rgba, and the 
 ```
 IQnection\PageBuilder\Section\PageBuilderSection:
   background_colors:
-    '#000000': 'bg-black'
-    '#ffffff': 'bg-white'
+    'Black': 'bg-black'
+    'White': 'bg-white'
 ```
 You can also assign borders to the top and bottom
 This CSS is generated for you, so all you need to do is provide the colors to select from
 ```
 IQnection\PageBuilder\Section\PageBuilderSection:
   border_colors:
-    - '#000000'
-    - '#ffffff'
+    'Black': '#000000'
+    'White': '#ffffff'
 ```
 
 ### Headline Block
@@ -53,7 +55,8 @@ Then add the value to your config to make it a selection
 ```
 IQnection\PageBuilder\ContentBuilder\Block\Headline:
   colors:
-    '#000000': 'text-black'
+    'Black': 'text-black'
+    'White': 'text-white'
 ```
 
 ### Blog Feed Block

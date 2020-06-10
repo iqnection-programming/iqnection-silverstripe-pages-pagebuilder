@@ -2,4 +2,14 @@
 
 .content-builder-block {
 	padding:20px 0;
+	margin:0 auto;
+	
+	&,&.page-width {
+		width:1230px;
+		max-width:97%;
+	}
+	&.window-width {
+		width:auto;
+		max-width:none;
+	}
 }
