@@ -1,9 +1,15 @@
 @import '../base';
 
-.content-builder-container {
+.content-builder-container 							{ padding:10% 0; 
+	
+	@media(min-width:801px)							{ padding:8% 0; }
+	@media(min-width:1025px)						{ padding:50px 0; }
+	
 	@import '../Blocks/Block';
 	@import '../Blocks/Headline';
 	@import '../Blocks/Content';
 	@import '../Blocks/ContentContent';
+	@import '../Blocks/ContentContentContent';
 	@import '../Blocks/BlogFeed';
 }
+
