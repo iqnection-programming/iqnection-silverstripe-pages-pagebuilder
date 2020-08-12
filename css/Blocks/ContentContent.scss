@@ -1,15 +1,37 @@
 @import '../base';
 
 /*-- Content Builder Content Content --*/
-.content-builder-block-element.content-content		{ display:flex; justify-content:space-between; align-items:stretch;
-	> *												{ width:100%; margin:4% 0 0; }
+.content-builder-block-element.content-content		{ display:flex; justify-content:space-between; align-items:stretch; 
+	> *												{ width:100%; }
 	
 	@media(min-width:801px) {
+		&											{ margin-left:-4%; }
 		.flex--left									{ order:1; }
 		.flex--right								{ order:2; }
-		> *											{ max-width:48%; margin-top:0; }
+		> *											{ max-width:50%; padding-left:4%; }
+		&.split-30-70								{
+			.flex--left								{ max-width:30%; }
+			.flex--right							{ max-width:70%; }
+		}
+		&.split-60-40								{
+			.flex--left								{ max-width:60%; }
+			.flex--right							{ max-width:40%; }
+		}
+		&.split-50-50								{
+			.flex--left								{ max-width:50%; }
+			.flex--right							{ max-width:50%; }
+		}
+		&.split-40-60								{
+			.flex--left								{ max-width:40%; }
+			.flex--right							{ max-width:60%; }
+		}
+		&.split-70-30								{
+			.flex--left								{ max-width:70%; }
+			.flex--right							{ max-width:30%; }
+		}
 	}
 	@media(max-width:800px){
 		&											{ flex-direction:column; align-items:center; }
+		.flex--right								{ margin-top:30px; }
 	}
 }

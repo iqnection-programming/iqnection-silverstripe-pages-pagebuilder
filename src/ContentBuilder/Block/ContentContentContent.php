@@ -11,6 +11,18 @@ class ContentContentContent extends ContentContent
 	private static $db = [
 		'CenterContent' => 'HTMLText',
 	];
+	
+	private static $defaults = [
+		'Split' => '33/33/33'
+	];
+	
+	private static $split_options = [
+		'25/25/50',
+		'25/50/25',
+		'50/25/25',
+		'20/60/20',
+		'33/33/33'
+	];
 		
 	public function getCMSFields()
 	{

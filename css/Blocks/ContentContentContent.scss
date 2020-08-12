@@ -1,13 +1,42 @@
 @import '../base';
 
 /*-- Content Builder Content Content Content --*/
-.content-builder-block-element.content-content-content		{ display:flex; justify-content:space-between; align-items:stretch;
-	> .flex--col											{ width:100%; margin:4% 0 0; }
+.content-builder-block-element.content-content-content		{ display:flex; justify-content:space-between; align-items:stretch; 
+	> .flex--col											{ width:100%; }
 	
 	@media(min-width:801px) {
-		> .flex--col										{ max-width:30.666%; margin-top:0; }
+		&													{ margin-left:-4%; }
+		> .flex--col										{ max-width:30.666%; margin-top:0; padding-left:4%; }
+		&.split-25-25-50									{
+			.flex--col.col-left,
+			.flex--col.col-center							{ max-width:25%; }
+			.flex--col.col-right							{ max-width:50%; }
+		}
+		&.split-25-50-25									{
+			.flex--col.col-left,
+			.flex--col.col-right							{ max-width:25%; }
+			.flex--col.col-center							{ max-width:50%; }
+			
+		}
+		&.split-50-25-25									{
+			.flex--col.col-left								{ max-width:50%; }
+			.flex--col.col-center,
+			.flex--col.col-right							{ max-width:25%; }
+		}
+		&.split-20-60-20									{
+			.flex--col.col-left,
+			.flex--col.col-right							{ max-width:25%; }
+			.flex--col.col-center							{ max-width:60%; }
+		}
+		&.split-33-33-33									{
+			.flex--col.col-left,
+			.flex--col.col-center,
+			.flex--col.col-right							{ max-width:33%; }
+		}
 	}
 	@media(max-width:800px){
 		&													{ flex-direction:column; align-items:center; }
+		> .flex--col.col-center,
+		> .flex--col.col-right								{ margin-top:30px; }
 	}
 }

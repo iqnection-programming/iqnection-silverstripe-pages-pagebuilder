@@ -3,6 +3,10 @@
 
 
 ##
+ - updated Guzzle version requirement
+ - added size selections for 2 and 3 column blocks
+ 
+##
 - Bug Fixes, Improvements
 
 ##

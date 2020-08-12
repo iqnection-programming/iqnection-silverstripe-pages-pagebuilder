@@ -2,3 +2,10 @@
 
 input.text.color,
 input[type="color"]			{ height:36px; }
+
+.content-block-column-split-preview			{ width:150px; border:1px solid #ccc; display:flex; align-items:stretch; justify-content:flex-start; }
+.content-block-column-split-preview	div										{ border-left:1px solid #ccc; font-size:20px; text-align:center; line-height:40px; height:40px; }
+.content-block-column-split-preview	div:first-child							{ border:none; }
+.content-block-column-split-preview:hover									{ box-shadow:0 0 3px 0 #000; }
+input:checked + .content-block-column-split-preview							{ box-shadow:0 0 4px 0 #390; }
+

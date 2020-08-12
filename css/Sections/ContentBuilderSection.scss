@@ -1,8 +1,8 @@
 @import '../base';
 
-.content-builder-container 							{ padding:10% 0; 
+.content-builder-container 							{ padding:30px 0; 
 	
-	@media(min-width:801px)							{ padding:8% 0; }
+	@media(min-width:801px)							{ padding:40px 0; }
 	@media(min-width:1025px)						{ padding:50px 0; }
 	
 	@import '../Blocks/Block';
