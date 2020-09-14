@@ -26,6 +26,10 @@ Extend IQnection\PageBuilder\ContentBuilder\Block\Block to build your own
 ### Section Background Colors
 Sections can be set to have background colors or images.
 To set background colors, you must first declare the class in your stylesheets
+```
+.bg-black { background:#000000; }
+.bg-white { background:#FFFFFF; }
+```
 Then add a config value for each class declared
 Each value should be a key value, where the key is the dropdown option label, and the value should be the class that will be assigned to the block
 ```
@@ -34,10 +38,11 @@ IQnection\PageBuilder\Section\PageBuilderSection:
     'Black': 'bg-black'
     'White': 'bg-white'
 ```
+
 You can also assign borders to the top and bottom
 This CSS is generated for you, so all you need to do is provide the colors to select from
 ```
-IQnection\PageBuilder\Section\PageBuilderSection:
+#IQnection\PageBuilder\Section\PageBuilderSection:
   border_colors:
     'Black': '#000000'
     'White': '#ffffff'
@@ -61,12 +66,12 @@ IQnection\PageBuilder\ContentBuilder\Block\Headline:
 
 ### Horizontal Bar
 This block is helpful when you want to divide content but maintain a background image through what appears to be multiple sections
-Add the options to your config to make it a selection
+Add the options to your config to make it a selection, the styles should already be declared from setting up the PageBuilderSection background colors above
 ```
 IQnection\PageBuilder\ContentBuilder\Block\HorizontalBar:
   colors:
-    'Black': '#000000'
-    'White': '#ffffff'
+    'Black': 'bg-black'
+    'White': 'bg-white'
 ```
 
 ### Blog Feed Block
