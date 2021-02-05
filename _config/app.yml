@@ -7,3 +7,9 @@ SilverStripe\ORM\DataObject:
 SilverStripe\Admin\LeftAndMain:
   extra_requirements_css:
     - iqnection-pages/pagebuilder:admin/client/cms.css
+SilverStripe\Core\Injector\Injector:
+  Psr\SimpleCache\CacheInterface.iqPageBuilder:
+    factory: SilverStripe\Core\Cache\CacheFactory
+    constructor:
+      namespace: "iqPageBuilder"
+      defaultLifetime: 3600

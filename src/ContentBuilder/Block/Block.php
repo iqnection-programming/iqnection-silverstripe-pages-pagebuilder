@@ -8,13 +8,18 @@ use SilverStripe\Core\ClassInfo;
 use SilverStripe\Core\Injector\Injector;
 use IQnection\PageBuilder\Section\ContentBuilderSection;
 use SilverStripe\Assets\Shortcodes\FileLink;
+use Psr\SimpleCache\CacheInterface;
+use SilverStripe\Core\Flushable;
 
-class Block extends DataObject
+
+class Block extends DataObject implements Flushable
 {
 	private static $table_name = 'ContentBuilderBlock';
 	private static $singular_name = 'Block';
 	private static $plural_name = 'Blocks';
-	
+
+	private static $anchor_regex = '/\\<[^\\>]*(?:name|id)[\\s=]*[\\"\']([^\\"\']*)[\\"\']/im';
+
 	private static $type_title = 'Unknown Block Type';
 	
 	private static $db = [
@@ -59,12 +64,18 @@ class Block extends DataObject
 					->setEmptyString('Default')
 			);
 		}
-		
-		if ($this->Exists())
-		{
-			$fields->addFieldToTab('Root.Preview', Forms\LiteralField::create('_preview', $this->CMSPreview()));
-		}
 		return $fields;
+	}
+
+	public static function flush()
+	{
+		$cache = Injector::inst()->get(CacheInterface::class . '.iqPageBuilder');
+		$cache->clear();
+	}
+
+	public function getAnchorsInContent()
+	{
+		return [];
 	}
 	
 	public function getBetterButtonsActions()
@@ -126,6 +137,8 @@ class Block extends DataObject
 				$fileLink->Linked()->publishSingle();
 			}
 		}
+		$cache = Injector::inst()->get(CacheInterface::class . '.iqPageBuilder');
+		$cache->delete($this->getCacheName());
 	}
 	
 	public function getTitle()
@@ -147,9 +160,28 @@ class Block extends DataObject
 	{
 		return $this->Render();
 	}
-	
+
+	public function getCacheName()
+	{
+		$cacheKey = md5(serialize([
+			'PageBuilder',
+			$this->getClassName(),
+			$this->ID,
+			$this->LastEdited
+		]));
+
+		return $cacheKey;
+	}
+
 	public function Render()
 	{
+		$cache = Injector::inst()->get(CacheInterface::class . '.iqPageBuilder');
+		$cacheKey = $this->getCacheName();
+		if ($rendered = $cache->get($cacheKey))
+		{
+			return $rendered;
+		}
+
 		$templates = [];
 		foreach(array_reverse(ClassInfo::ancestry($this)) as $ancestor)
 		{
@@ -159,6 +191,8 @@ class Block extends DataObject
 				break;
 			}
 		}
-		return $this->renderWith($templates);
+		$rendered = $this->renderWith($templates);
+		$cache->set($cacheKey, $rendered);
+		return $rendered;
 	}
 }

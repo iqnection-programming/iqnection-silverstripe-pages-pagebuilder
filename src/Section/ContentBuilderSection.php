@@ -61,7 +61,17 @@ class ContentBuilderSection extends PageBuilderSection
 		}
 		return $fields;
 	}
-	
+
+	public function getAnchorsInContent()
+	{
+		$anchors = [];
+		foreach($this->ContentBuilderBlocks() as $ContentBuilderBlock)
+		{
+			$anchors = array_merge($anchors, $ContentBuilderBlock->getAnchorsInContent());
+		}
+		return $anchors;
+	}
+
 	public function getDescription()
 	{
 		$html = '<strong>Content Blocks:</strong><ul><li>';

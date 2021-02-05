@@ -21,6 +21,27 @@ class Content extends Block
 	
 	public function getDescription()
 	{
-		return $this->dbObject('Content')->Summary();
+		return $this->dbObject('Content')->setProcessShortcodes(false)->Summary();
+	}
+
+	public function getAnchorsInContent()
+	{
+		$anchors = parent::getAnchorsInContent();
+
+		$parseSuccess = preg_match_all(
+            $this->Config()->get('anchor_regex'),
+            $this->Content,
+            $matches
+        );
+
+        if (!$parseSuccess) {
+            return [];
+        }
+
+        $blockanchors = array_values(array_unique(array_filter(
+            $matches[1]
+        )));
+
+		return array_merge($blockanchors, $anchors);
 	}
 }

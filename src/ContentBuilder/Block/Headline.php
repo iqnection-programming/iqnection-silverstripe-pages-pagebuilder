@@ -18,6 +18,7 @@ class Headline extends Block
 		'Weight' => 'Varchar(20)',
 		'Style' => 'Varchar(20)',
 		'Size' => 'Text',
+		'Anchor' => 'Varchar(50)'
 	];
 	
 	private static $defaults = [
@@ -94,7 +95,19 @@ class Headline extends Block
 		]);
 		return $fields;
 	}
-	
+
+	public function getAnchorsInContent()
+	{
+		$anchors = parent::getAnchorsInContent();
+
+		if ($this->Anchor)
+		{
+			$anchors[] = $this->Anchor;
+		}
+
+		return $anchors;
+	}
+
 	public function onBeforeWrite()
 	{
 		parent::onBeforeWrite();

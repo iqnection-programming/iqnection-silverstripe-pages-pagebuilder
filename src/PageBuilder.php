@@ -78,7 +78,19 @@ class PageBuilder extends \Page
 		}
 		return $data;
 	}
-	
+
+	public function getAnchorsOnPage()
+	{
+		$anchors = parent::getAnchorsOnPage();
+
+		foreach($this->PageBuilderSections() as $PageBuilderSection)
+		{
+			$anchors = array_merge($anchors, $PageBuilderSection->getAnchorsInContent());
+		}
+
+		return $anchors;
+	}
+
 	/**
 	 * Collects custom CSS from each section
 	 * Expects each section to provide format:

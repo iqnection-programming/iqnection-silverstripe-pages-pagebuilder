@@ -47,10 +47,32 @@ class ContentContent extends Block
 			->setSource($columnSplits));
 		return $fields;
 	}
-	
+
+	public function getAnchorsInContent()
+	{
+		$anchors = parent::getAnchorsInContent();
+
+		$parseSuccess = preg_match_all(
+            $this->Config()->get('anchor_regex'),
+            $this->LeftContent.$this->RightContent,
+            $matches
+        );
+
+        if (!$parseSuccess) {
+            return [];
+        }
+
+        $blockanchors = array_values(array_unique(array_filter(
+            $matches[1]
+        )));
+
+		return array_merge($blockanchors, $anchors);
+	}
+
 	public function getDescription()
 	{
-		return "Left: ".$this->dbObject('LeftContent')->Summary()."\nRight: ".$this->dbObject('RightContent')->Summary();
+		return "Left: ".$this->dbObject('LeftContent')->setProcessShortcodes(false)->Summary()
+			."\nRight: ".$this->dbObject('RightContent')->setProcessShortcodes(false)->Summary();
 	}
 	
 	public function updateCSSClasses(&$classes = [])

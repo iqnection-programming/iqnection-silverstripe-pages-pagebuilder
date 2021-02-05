@@ -30,11 +30,32 @@ class ContentContentContent extends ContentContent
 		$fields->insertAfter('LeftContent', Forms\HTMLEditor\HTMLEditorField::create('CenterContent','Center Content')->addExtraClass('stacked') );
 		return $fields;
 	}
-	
+
+	public function getAnchorsInContent()
+	{
+		$anchors = parent::getAnchorsInContent();
+
+		$parseSuccess = preg_match_all(
+            $this->Config()->get('anchor_regex'),
+            $this->CenterContent,
+            $matches
+        );
+
+        if (!$parseSuccess) {
+            return [];
+        }
+
+        $blockanchors = array_values(array_unique(array_filter(
+            $matches[1]
+        )));
+
+		return array_merge($blockanchors, $anchors);
+	}
+
 	public function getDescription()
 	{
-		return "Left: ".$this->dbObject('LeftContent')->Summary()
-			."\nCenter: ".$this->dbObject('CenterContent')->Summary()
-			."\nRight: ".$this->dbObject('RightContent')->Summary();
+		return "Left: ".$this->dbObject('LeftContent')->setProcessShortcodes(false)->Summary()
+			."\nCenter: ".$this->dbObject('CenterContent')->setProcessShortcodes(false)->Summary()
+			."\nRight: ".$this->dbObject('RightContent')->setProcessShortcodes(false)->Summary();
 	}
 }

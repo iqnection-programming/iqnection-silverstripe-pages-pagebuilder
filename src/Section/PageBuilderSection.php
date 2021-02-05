@@ -124,12 +124,13 @@ class PageBuilderSection extends DataObject
 				])
 			]);
 		}
-		
-		if ($this->Exists())
-		{
-			$fields->addFieldToTab('Root.Preview', Forms\LiteralField::create('_preview', $this->CMSPreview()));
-		}
+
 		return $fields;
+	}
+
+	public function getAnchorsInContent()
+	{
+		return [];
 	}
 	
 	public function BackgroundPreview()
