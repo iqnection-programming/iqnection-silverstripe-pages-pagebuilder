@@ -3,7 +3,7 @@
 namespace IQnection\PageBuilder;
 
 use SilverStripe\Forms;
-use UndefinedOffset\SortableGridField\Forms\GridFieldSortableRows;
+use Symbiote\GridFieldExtensions\GridFieldOrderableRows;
 use Symbiote\GridFieldExtensions;
 use SilverStripe\Core\ClassInfo;
 use IQnection\PageBuilder\Section\PageBuilderSection;
@@ -12,15 +12,15 @@ class PageBuilder extends \Page
 {
 	private static $table_name = 'PageBuilder';
 	private static $icon_class = "font-icon-p-alt-2";
-	
+
 	private static $has_many = [
 		'PageBuilderSections' => PageBuilderSection::class
 	];
-	
+
 	private static $owns = [
 		'PageBuilderSections'
 	];
-	
+
 	public function getCMSFields()
 	{
 		$fields = parent::getCMSFields();
@@ -35,7 +35,7 @@ class PageBuilder extends \Page
 			'Panels',
 			$this->PageBuilderSections(),
 			$PageBuilderSections_config = Forms\GridField\GridFieldConfig_RecordEditor::create(100)
-				->addComponent(new GridFieldSortableRows('SortOrder'))
+				->addComponent(new GridFieldOrderableRows('SortOrder'))
 			)
 		);
 		$sectionTypes = [];
@@ -62,12 +62,12 @@ class PageBuilder extends \Page
 		{
 			$PageBuilderSections_gf->setModelClass(key($sectionTypes));
 		}
-		
+
 		$fields->addFieldToTab('Root.Developer.PageBuilder', Forms\LiteralField::create('_exportPageBuilder','<a href="'.$this->Link('_pageBuilderExport').'" target="_blank">Export Page Builder Data</a>'));
-		
+
 		return $fields;
 	}
-	
+
 	public function _pageBuilderExport()
 	{
 		$data = [];

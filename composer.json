@@ -12,23 +12,19 @@
 	],
 	"require": {
 		"silverstripe/framework": "^4.0",
-		"undefinedoffset/sortablegridfield": "*",
 		"symbiote/silverstripe-gridfieldextensions": "^3",
-		"iqnection-themes/mysite": "^2",
-		"iqnection-pages/basepages":"^2.0",
 		"guzzlehttp/guzzle":"~6.0 || ~7.0"
 	},
 	"extra": {
 		"expose": [
 			"css",
 			"images",
-			"javascript",
 			"admin"
 		]
 	},
 	"autoload": {
 		"psr-4": {
-			"IQnection\\PageBuilder\\": "app/src/"
+			"IQnection\\PageBuilder\\": "src/"
 		}
 	}
 }
